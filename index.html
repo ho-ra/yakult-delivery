@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>14지구 야쿠르트 배달 체크리스트</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        body {
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+        header {
+            background-color: #2D68C4;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 0;
+        }
+        .tabs {
+            display: flex;
+            background-color: #f0f0f0;
+            border-bottom: 1px solid #ddd;
+            overflow-x: auto;
+        }
+        .tab {
+            padding: 10px 15px;
+            cursor: pointer;
+            flex: 1;
+            text-align: center;
+            white-space: nowrap;
+        }
+        .tab.active {
+            background-color: #fff;
+            border-bottom: 3px solid #2D68C4;
+            font-weight: bold;
+        }
+        .content {
+            background-color: white;
+            padding: 15px;
+            border-radius: 0 0 8px 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .day-content {
+            display: none;
+        }
+        .day-content.active {
+            display: block;
+        }
+        .customer {
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+        }
+        .customer-info {
+            flex: 1;
+        }
+        .customer-name {
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .customer-address {
+            font-size: 0.9em;
+            color: #666;
+        }
+        .customer-note {
+            font-size: 0.8em;
+            color: #ff6b6b;
+            margin-top: 2px;
+        }
+        .customer-products {
+            font-size: 0.85em;
+            color: #2D68C4;
+            position: relative;
+            padding-right: 60px;
+        }
+        .product-actions {
+            position: absolute;
+            right: 0;
+            top: 0;
+            display: flex;
+        }
+        .edit-product-btn, .delete-product-btn {
+            border: none;
+            background: none;
+            color: #2D68C4;
+            cursor: pointer;
+            padding: 2px 5px;
+            font-size: 0.9em;
+        }
+        .delete-product-btn {
+            color: #f44336;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+        }
+        .new-customer-btn {
+            background-color: #2D68C4;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            cursor: pointer;
+            width: 100%;
+        }
+        .add-product-btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            margin-top: 5px;
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+        .customer-form, .product-form {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            display: none;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .form-actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .form-actions button {
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .save-btn {
+            background-color: #2D68C4;
+            color: white;
+            border: none;
+        }
+        .cancel-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        .notes-section {
+            margin-top: 20px;
+            background-color: #fffde7;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .notes-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .notes-content {
+            min-height: 60px;
+            background-color: white;
+            border: 1px solid #eee;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        #editNotes {
+            background-color: transparent;
+            border: none;
+            color: #2D68C4;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #999;
+        }
+        .date-display {
+            text-align: center;
+            background-color: #f0f0f0;
+            padding: 8px;
+            font-size: 0.9em;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .search-bar {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+        }
+        .search-btn {
+            background-color: #2D68C4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 0 4px 4px 0;
+            cursor: pointer;
+        }
+        .clear-btn {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            margin-left: 10px;
+            cursor: pointer;
+        }
+        .customer-count {
+            text-align: right;
+            margin-bottom: 10px;
+            font-size: 0.85em;
+            color: #666;
+        }
+        .bulk-actions {
+            display: flex;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+        .bulk-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+        .check-all-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .uncheck-all-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        .export-btn {
+            background-color: #FF9800;
+            color: white;
+        }
+        .scroll-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(45, 104, 196, 0.7);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            display: none;
+        }
+        .building-tag {
+            display: inline-block;
+            padding: 2px 5px;
+            font-size: 0.75em;
+            border-radius: 3px;
+            margin-right: 5px;
+            color: white;
+        }
+        .building-tag.preditt {
+            background-color: #E91E63;
+        }
+        .building-tag.jainomics {
+            background-color: #673AB7;
+        }
+        .building-tag.ramian {
+            background-color: #2196F3;
+        }
+        .building-tag.prugio {
+            background-color: #4CAF50;
+        }
+        .building-tag.other {
+            background-color: #795548;
+        }
+        .filter-section {
+            margin-bottom: 15px;
+        }
+        .filter-btn {
+            margin-right: 5px;
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.8em;
+            background-color: white;
+        }
+        .filter-btn.active {
+            background-color: #2D68C4;
+            color: white;
+            border-color: #2D68C4;
+        }
+        .customer-actions {
+            display: flex;
+            align-items: center;
+        }
+        .edit-customer-btn, .delete-customer-btn {
+            border: none;
+            background: none;
+            cursor: pointer;
+            padding: 3px;
+            margin-left: 5px;
+        }
+        .edit-customer-btn {
+            color: #2D68C4;
+        }
+        .delete-customer-btn {
+            color: #f44336;
+        }
+        .data-management {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+        }
+        .data-management h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .data-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .data-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+        }
+        .backup-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .restore-btn {
+            background-color: #2196F3;
+            color: white;
+        }
+        .reset-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        #backupData {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            display: none;
+        }
+        .daily-mode {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+        .daily-mode label {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .daily-mode-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+        .daily-mode-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .daily-mode-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .daily-mode-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .daily-mode-slider {
+            background-color: #2D68C4;
+        }
+        input:checked + .daily-mode-slider:before {
+            transform: translateX(26px);
+        }
+        .preditt-mode {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+        .preditt-mode h3 {
+            margin-top: 0;
+            color: #E91E63;
+        }
+        .reset-preditt-btn {
+            background-color: #E91E63;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .storage-status {
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .error-message {
+            color: #f44336;
+            font-size: 0.8em;
+            margin-top: 5px;
+            text-align: center;
+            display: none;
+        }
+        .import-section {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #fff3e0;
+            border-radius: 5px;
+        }
+        .import-section h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .import-option {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+        }
+        .import-option h4 {
+            margin-top: 0;
+            margin-bottom: 5px;
+            color: #FF9800;
+        }
+        #csvFileInput {
+            margin-top: 10px;
+        }
+        #csvData {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            display: none;
+        }
+        .import-btn {
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>14지구 야쿠르트 배달</h1>
+        </header>
+        
+        <div class="daily-mode">
+            <label class="daily-mode-switch">
+                <input type="checkbox" id="dailyModeToggle" onchange="toggleDailyMode()">
+                <span class="daily-mode-slider"></span>
+            </label>
+            <label for="dailyModeToggle">프레딧 주문 모드</label>
+        </div>
+        
+        <div id="predittMode" class="preditt-mode">
+            <h3>프레딧 인터넷 주문 모드</h3>
+            <p>매일 변경되는 프레딧 주문을 관리할 수 있습니다. 내용을 수정하고 새로고침해도 데이터가 유지됩니다.</p>
+            <button class="reset-preditt-btn" onclick="resetPredittData()">프레딧 데이터 초기화</button>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab" onclick="showDay('monday')">월요일</div>
+            <div class="tab" onclick="showDay('tuesday')">화요일</div>
+            <div class="tab" onclick="showDay('wednesday')">수요일</div>
+            <div class="tab" onclick="showDay('thursday')">목요일</div>
+            <div class="tab" onclick="showDay('friday')">금요일</div>
+        </div>
+        
+        <div class="content">
+            <div class="date-display" id="currentDate">2025년 5월 11일 일요일</div>
+            
+            <div id="monday" class="day-content">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="mondaySearch" placeholder="호수 또는 제품으로 검색..." oninput="searchCustomers('monday')">
+                    <button class="search-btn" onclick="searchCustomers('monday')">검색</button>
+                    <button class="clear-btn" onclick="clearSearch('monday')">초기화</button>
+                </div>
+                
+                <div class="customer-count" id="mondayCount">총 0명의 고객</div>
+                
+                <div class="filter-section">
+                    <button class="filter-btn active" data-building="all" onclick="filterBuilding('monday', 'all')">전체</button>
+                    <button class="filter-btn" data-building="jainomics" onclick="filterBuilding('monday', 'jainomics')">자이</button>
+                    <button class="filter-btn" data-building="ramian" onclick="filterBuilding('monday', 'ramian')">래미안</button>
+                    <button class="filter-btn" data-building="prugio" onclick="filterBuilding('monday', 'prugio')">푸르지오</button>
+                    <button class="filter-btn" data-building="other" onclick="filterBuilding('monday', 'other')">기타</button>
+                </div>
+                
+                <div class="bulk-actions">
+                    <button class="bulk-btn check-all-btn" onclick="checkAll('monday')">모두 체크</button>
+                    <button class="bulk-btn uncheck-all-btn" onclick="uncheckAll('monday')">모두 해제</button>
+                    <button class="bulk-btn export-btn" onclick="exportData('monday')">데이터 내보내기</button>
+                </div>
+                
+                <div id="mondayCustomers"></div>
+                
+                <button class="new-customer-btn" onclick="showNewCustomerForm('monday')">+ 신규 고객 추가</button>
+                
+                <div class="notes-section">
+                    <div class="notes-title">
+                        <span>월요일 특이사항</span>
+                        <button id="editNotes" onclick="editNotes('monday')">수정</button>
+                    </div>
+                    <div class="notes-content" id="mondayNotes" contenteditable="false"></div>
+                </div>
+            </div>
+            
+            <div id="tuesday" class="day-content">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="tuesdaySearch" placeholder="호수 또는 제품으로 검색..." oninput="searchCustomers('tuesday')">
+                    <button class="search-btn" onclick="searchCustomers('tuesday')">검색</button>
+                    <button class="clear-btn" onclick="clearSearch('tuesday')">초기화</button>
+                </div>
+                
+                <div class="customer-count" id="tuesdayCount">총 0명의 고객</div>
+                
+                <div class="filter-section">
+                    <button class="filter-btn active" data-building="all" onclick="filterBuilding('tuesday', 'all')">전체</button>
+                    <button class="filter-btn" data-building="jainomics" onclick="filterBuilding('tuesday', 'jainomics')">자이</button>
+                    <button class="filter-btn" data-building="ramian" onclick="filterBuilding('tuesday', 'ramian')">래미안</button>
+                    <button class="filter-btn" data-building="prugio" onclick="filterBuilding('tuesday', 'prugio')">푸르지오</button>
+                    <button class="filter-btn" data-building="other" onclick="filterBuilding('tuesday', 'other')">기타</button>
+                </div>
+                
+                <div class="bulk-actions">
+                    <button class="bulk-btn check-all-btn" onclick="checkAll('tuesday')">모두 체크</button>
+                    <button class="bulk-btn uncheck-all-btn" onclick="uncheckAll('tuesday')">모두 해제</button>
+                    <button class="bulk-btn export-btn" onclick="exportData('tuesday')">데이터 내보내기</button>
+                </div>
+                
+                <div id="tuesdayCustomers"></div>
+                
+                <button class="new-customer-btn" onclick="showNewCustomerForm('tuesday')">+ 신규 고객 추가</button>
+                
+                <div class="notes-section">
+                    <div class="notes-title">
+                        <span>화요일 특이사항</span>
+                        <button id="editNotes" onclick="editNotes('tuesday')">수정</button>
+                    </div>
+                    <div class="notes-content" id="tuesdayNotes" contenteditable="false"></div>
+                </div>
+            </div>
+            
+            <div id="wednesday" class="day-content">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="wednesdaySearch" placeholder="호수 또는 제품으로 검색..." oninput="searchCustomers('wednesday')">
+                    <button class="search-btn" onclick="searchCustomers('wednesday')">검색</button>
+                    <button class="clear-btn" onclick="clearSearch('wednesday')">초기화</button>
+                </div>
+                
+                <div class="customer-count" id="wednesdayCount">총 0명의 고객</div>
+                
+                <div class="filter-section">
+                    <button class="filter-btn active" data-building="all" onclick="filterBuilding('wednesday', 'all')">전체</button>
+                    <button class="filter-btn" data-building="jainomics" onclick="filterBuilding('wednesday', 'jainomics')">자이</button>
+                    <button class="filter-btn" data-building="ramian" onclick="filterBuilding('wednesday', 'ramian')">래미안</button>
+                    <button class="filter-btn" data-building="prugio" onclick="filterBuilding('wednesday', 'prugio')">푸르지오</button>
+                    <button class="filter-btn" data-building="other" onclick="filterBuilding('wednesday', 'other')">기타</button>
+                </div>
+                
+                <div class="bulk-actions">
+                    <button class="bulk-btn check-all-btn" onclick="checkAll('wednesday')">모두 체크</button>
+                    <button class="bulk-btn uncheck-all-btn" onclick="uncheckAll('wednesday')">모두 해제</button>
+                    <button class="bulk-btn export-btn" onclick="exportData('wednesday')">데이터 내보내기</button>
+                </div>
+                
+                <div id="wednesdayCustomers"></div>
+                
+                <button class="new-customer-btn" onclick="showNewCustomerForm('wednesday')">+ 신규 고객 추가</button>
+                
+                <div class="notes-section">
+                    <div class="notes-title">
+                        <span>수요일 특이사항</span>
+                        <button id="editNotes" onclick="editNotes('wednesday')">수정</button>
+                    </div>
+                    <div class="notes-content" id="wednesdayNotes" contenteditable="false"></div>
+                </div>
+            </div>
+            
+            <div id="thursday" class="day-content">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="thursdaySearch" placeholder="호수 또는 제품으로 검색..." oninput="searchCustomers('thursday')">
+                    <button class="search-btn" onclick="searchCustomers('thursday')">검색</button>
+                    <button class="clear-btn" onclick="clearSearch('thursday')">초기화</button>
+                </div>
+                
+                <div class="customer-count" id="thursdayCount">총 0명의 고객</div>
+                
+                <div class="filter-section">
+                    <button class="filter-btn active" data-building="all" onclick="filterBuilding('thursday', 'all')">전체</button>
+                    <button class="filter-btn" data-building="jainomics" onclick="filterBuilding('thursday', 'jainomics')">자이</button>
+                    <button class="filter-btn" data-building="ramian" onclick="filterBuilding('thursday', 'ramian')">래미안</button>
+                    <button class="filter-btn" data-building="prugio" onclick="filterBuilding('thursday', 'prugio')">푸르지오</button>
+                    <button class="filter-btn" data-building="other" onclick="filterBuilding('thursday', 'other')">기타</button>
+                </div>
+                
+                <div class="bulk-actions">
+                    <button class="bulk-btn check-all-btn" onclick="checkAll('thursday')">모두 체크</button>
+                    <button class="bulk-btn uncheck-all-btn" onclick="uncheckAll('thursday')">모두 해제</button>
+                    <button class="bulk-btn export-btn" onclick="exportData('thursday')">데이터 내보내기</button>
+                </div>
+                
+                <div id="thursdayCustomers"></div>
+                
+                <button class="new-customer-btn" onclick="showNewCustomerForm('thursday')">+ 신규 고객 추가</button>
+                
+                <div class="notes-section">
+                    <div class="notes-title">
+                        <span>목요일 특이사항</span>
+                        <button id="editNotes" onclick="editNotes('thursday')">수정</button>
+                    </div>
+                    <div class="notes-content" id="thursdayNotes" contenteditable="false"></div>
+                </div>
+            </div>
+            
+            <div id="friday" class="day-content">
+                <div class="search-bar">
+                    <input type="text" class="search-input" id="fridaySearch" placeholder="호수 또는 제품으로 검색..." oninput="searchCustomers('friday')">
+                    <button class="search-btn" onclick="searchCustomers('friday')">검색</button>
+                    <button class="clear-btn" onclick="clearSearch('friday')">초기화</button>
+                </div>
+                
+                <div class="customer-count" id="fridayCount">총 0명의 고객</div>
+                
+                <div class="filter-section">
+                    <button class="filter-btn active" data-building="all" onclick="filterBuilding('friday', 'all')">전체</button>
+                    <button class="filter-btn" data-building="jainomics" onclick="filterBuilding('friday', 'jainomics')">자이</button>
+                    <button class="filter-btn" data-building="ramian" onclick="filterBuilding('friday', 'ramian')">래미안</button>
+                    <button class="filter-btn" data-building="prugio" onclick="filterBuilding('friday', 'prugio')">푸르지오</button>
+                    <button class="filter-btn" data-building="other" onclick="filterBuilding('friday', 'other')">기타</button>
+                </div>
+                
+                <div class="bulk-actions">
+                    <button class="bulk-btn check-all-btn" onclick="checkAll('friday')">모두 체크</button>
+                    <button class="bulk-btn uncheck-all-btn" onclick="uncheckAll('friday')">모두 해제</button>
+                    <button class="bulk-btn export-btn" onclick="exportData('friday')">데이터 내보내기</button>
+                </div>
+                
+                <div id="fridayCustomers"></div>
+                
+                <button class="new-customer-btn" onclick="showNewCustomerForm('friday')">+ 신규 고객 추가</button>
+                
+                <div class="notes-section">
+                    <div class="notes-title">
+                        <span>금요일 특이사항</span>
+                        <button id="editNotes" onclick="editNotes('friday')">수정</button>
+                    </div>
+                    <div class="notes-content" id="fridayNotes" contenteditable="false"></div>
+                </div>
+            </div>
+            
+            <!-- 고객 추가/편집 폼 -->
+            <div id="customerForm" class="customer-form">
+                <div class="form-group">
+                    <label for="customerBuilding">아파트</label>
+                    <select id="customerBuilding">
+                        <option value="jainomics">자이</option>
+                        <option value="ramian">래미안</option>
+                        <option value="prugio">푸르지오</option>
+                        <option value="other">기타</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="customerAddress">호수</label>
+                    <input type="text" id="customerAddress" placeholder="예: 613-1203">
+                </div>
+                <input type="hidden" id="customerIndex" value="">
+                <input type="hidden" id="formMode" value="add">
+                
+                <div id="productList"></div>
+                
+                <button class="add-product-btn" onclick="showProductForm('add')">+ 제품 추가</button>
+                
+                <div class="form-actions">
+                    <button class="cancel-btn" onclick="hideCustomerForm()">취소</button>
+                    <button class="save-btn" onclick="saveCustomer()">저장</button>
+                </div>
+            </div>
+            
+            <!-- 제품 추가/편집 폼 -->
+            <div id="productForm" class="product-form">
+                <div class="form-group">
+                    <label for="productName">제품명</label>
+                    <input type="text" id="productName" placeholder="예: 윌 당밸런스">
+                </div>
+                <div class="form-group">
+                    <label for="productQuantity">수량</label>
+                    <input type="number" id="productQuantity" placeholder="예: 1" min="1" value="1">
+                </div>
+                <div class="form-group">
+                    <label for="productNote">특이사항</label>
+                    <input type="text" id="productNote" placeholder="예: 소비기한 10일 이상">
+                </div>
+                <input type="hidden" id="productIndex" value="">
+                <input type="hidden" id="productFormMode" value="add">
+                
+                <div class="form-actions">
+                    <button class="cancel-btn" onclick="hideProductForm()">취소</button>
+                    <button class="save-btn" onclick="saveProduct()">저장</button>
+                </div>
+            </div>
+            
+            <!-- 데이터 가져오기 섹션 -->
+            <div class="import-section">
+                <h3>고객 데이터 가져오기</h3>
+                
+                <div class="import-option">
+                    <h4>CSV 파일 가져오기</h4>
+                    <p>스프레드시트에서 CSV 파일로 저장하여 가져올 수 있습니다.</p>
+                    <p>파일 형식: <code>요일,아파트,호수,제품명,수량,특이사항</code></p>
+                    <input type="file" id="csvFileInput" accept=".csv">
+                    <button class="import-btn" onclick="importCSV()">CSV 가져오기</button>
+                </div>
+                
+                <div class="import-option">
+                    <h4>직접 입력하기</h4>
+                    <p>데이터를 복사하여 붙여넣기할 수 있습니다.</p>
+                    <p>형식: <code>요일,아파트,호수,제품명,수량,특이사항</code></p>
+                    <textarea id="csvData" placeholder="요일,아파트,호수,제품명,수량,특이사항&#10;monday,jainomics,102-1303,윌 당밸런스,1,소비기한 10일 이상&#10;monday,ramian,105-602,야쿠르트 라이트,2,&#10;..."></textarea>
+                    <button class="import-btn" onclick="showCsvInput()">입력창 열기</button>
+                    <button class="import-btn" onclick="importCsvText()" style="display:none;" id="importCsvBtn">데이터 가져오기</button>
+                </div>
+            </div>
+            
+            <!-- 데이터 관리 섹션 -->
+            <div class="data-management">
+                <h3>데이터 관리</h3>
+                <p>배달 리스트 데이터를 백업하거나 복원할 수 있습니다.</p>
+                
+                <div class="data-buttons">
+                    <button class="data-btn backup-btn" onclick="backupData()">백업</button>
+                    <button class="data-btn restore-btn" onclick="showRestoreForm()">복원</button>
+                    <button class="data-btn reset-btn" onclick="resetData()">초기화</button>
+                </div>
+                
+                <textarea id="backupData" placeholder="백업 데이터를 붙여넣으세요"></textarea>
+                <div class="storage-status" id="storageStatus"></div>
+                <div class="error-message" id="errorMessage"></div>
+            </div>
+        </div>
+    </div>
+    
+    <button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+
+    <script>
+        // 데이터 저장소 - localStorage 대신 메모리 사용
+        let storageType = 'memory'; // 'memory', 'local', 'session'
+        let memoryStorage = {};
+        
+        // 전역 변수
+        let customersData = {
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: [],
+            friday: []
+        };
+        
+        // 프레딧 전용 데이터 (매일 변경되는 인터넷 주문)
+        let predittData = {
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: [],
+            friday: []
+        };
+        
+        let notesData = {
+            monday: '',
+            tuesday: '',
+            wednesday: '',
+            thursday: '',
+            friday: ''
+        };
+        
+        let currentDay = '';
+        let checkboxStates = {};
+        let currentFilter = {
+            monday: 'all',
+            tuesday: 'all',
+            wednesday: 'all',
+            thursday: 'all',
+            friday: 'all'
+        };
+        
+        // 임시 제품 목록 (제품 추가/편집 시 사용)
+        let tempProducts = [];
+        
+        // 프레딧 모드 상태
+        let isPredittMode = false;
+        
+        // 저장소 초기화
+        function initStorage() {
+            // Clear any previous error messages
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            try {
+                // Try accessing localStorage in a safer way
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem('test', '1');
+                    localStorage.removeItem('test');
+                    storageType = 'local';
+                    document.getElementById('storageStatus').textContent = '데이터 저장 방식: 로컬 스토리지 (항상 유지)';
+                    return;
+                }
+            } catch (e) {
+                console.log('localStorage 사용 불가:', e);
+            }
+            
+            try {
+                // Try accessing sessionStorage in a safer way
+                if (typeof sessionStorage !== 'undefined') {
+                    sessionStorage.setItem('test', '1');
+                    sessionStorage.removeItem('test');
+                    storageType = 'session';
+                    document.getElementById('storageStatus').textContent = '데이터 저장 방식: 세션 스토리지 (브라우저 닫을 때까지 유지)';
+                    document.getElementById('errorMessage').textContent = '개인정보 보호 모드나 보안 설정으로 인해 로컬 스토리지를 사용할 수 없어 세션 스토리지로 대체합니다. 브라우저를 닫으면 데이터가 사라집니다.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                    return;
+                }
+            } catch (e) {
+                console.log('sessionStorage 사용 불가:', e);
+            }
+            
+            // Fallback to memory storage
+            storageType = 'memory';
+            document.getElementById('storageStatus').textContent = '데이터 저장 방식: 메모리 (페이지 새로고침시 사라짐)';
+            document.getElementById('errorMessage').textContent = '브라우저 보안 설정으로 인해 데이터를 영구적으로 저장할 수 없습니다. 페이지를 새로고침하면 데이터가 사라집니다. 데이터를 유지하려면 "백업" 기능을 이용하세요.';
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+        
+        // 데이터 저장
+        function setStorageItem(key, value) {
+            try {
+                const jsonValue = JSON.stringify(value);
+                
+                if (storageType === 'local') {
+                    localStorage.setItem(key, jsonValue);
+                } else if (storageType === 'session') {
+                    sessionStorage.setItem(key, jsonValue);
+                } else {
+                    memoryStorage[key] = jsonValue;
+                }
+                return true;
+            } catch (e) {
+                console.error('데이터 저장 오류:', e);
+                document.getElementById('errorMessage').textContent = '데이터 저장 중 오류가 발생했습니다: ' + e.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                return false;
+            }
+        }
+        
+        // 데이터 불러오기
+        function getStorageItem(key, defaultValue) {
+            try {
+                let jsonValue;
+                
+                if (storageType === 'local') {
+                    jsonValue = localStorage.getItem(key);
+                } else if (storageType === 'session') {
+                    jsonValue = sessionStorage.getItem(key);
+                } else {
+                    jsonValue = memoryStorage[key];
+                }
+                
+                return jsonValue ? JSON.parse(jsonValue) : defaultValue;
+            } catch (e) {
+                console.error('데이터 불러오기 오류:', e);
+                document.getElementById('errorMessage').textContent = '데이터 불러오기 중 오류가 발생했습니다: ' + e.message;
+                document.getElementById('errorMessage').style.display = 'block';
+                return defaultValue;
+            }
+        }
+        
+        // 데이터 삭제
+        function removeStorageItem(key) {
+            try {
+                if (storageType === 'local') {
+                    localStorage.removeItem(key);
+                } else if (storageType === 'session') {
+                    sessionStorage.removeItem(key);
+                } else {
+                    delete memoryStorage[key];
+                }
+                return true;
+            } catch (e) {
+                console.error('데이터 삭제 오류:', e);
+                return false;
+            }
+        }
+        
+        // 페이지 로드 시 초기화
+        window.onload = function() {
+            // 저장소 초기화
+            initStorage();
+            
+            updateCurrentDate();
+            loadFromStorage();
+            
+            // 프레딧 모드 상태 확인
+            isPredittMode = getStorageItem('isPredittMode', false);
+            document.getElementById('dailyModeToggle').checked = isPredittMode;
+            toggleDailyMode();
+            
+            // 스크롤 이벤트 리스너 추가
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    document.getElementById('scrollTop').style.display = 'flex';
+                } else {
+                    document.getElementById('scrollTop').style.display = 'none';
+                }
+            });
+            
+            // CSV 파일 입력 이벤트 리스너
+            document.getElementById('csvFileInput').addEventListener('change', handleFileSelect);
+        };
+        
+        // 프레딧 모드 토글
+        function toggleDailyMode() {
+            isPredittMode = document.getElementById('dailyModeToggle').checked;
+            
+            if (isPredittMode) {
+                document.getElementById('predittMode').style.display = 'block';
+                
+                // Add preditt option to building select if not present
+                const buildingSelect = document.getElementById('customerBuilding');
+                if (!Array.from(buildingSelect.options).some(opt => opt.value === 'preditt')) {
+                    const predittOption = document.createElement('option');
+                    predittOption.value = 'preditt';
+                    predittOption.textContent = '프레딧';
+                    buildingSelect.insertBefore(predittOption, buildingSelect.firstChild);
+                }
+                
+                // Add Preditt filter buttons
+                const filterSections = document.querySelectorAll('.filter-section');
+                filterSections.forEach(section => {
+                    if (!section.querySelector('[data-building="preditt"]')) {
+                        const allButton = section.querySelector('[data-building="all"]');
+                        const predittButton = document.createElement('button');
+                        predittButton.className = 'filter-btn';
+                        predittButton.setAttribute('data-building', 'preditt');
+                        predittButton.textContent = '프레딧';
+                        predittButton.onclick = function() {
+                            const day = section.closest('.day-content').id;
+                            filterBuilding(day, 'preditt');
+                        };
+                        section.insertBefore(predittButton, allButton.nextSibling);
+                    } else {
+                        section.querySelector('[data-building="preditt"]').style.display = 'inline-block';
+                    }
+                });
+            } else {
+                document.getElementById('predittMode').style.display = 'none';
+                
+                // Hide Preditt filter buttons
+                const predittButtons = document.querySelectorAll('[data-building="preditt"]');
+                predittButtons.forEach(button => {
+                    button.style.display = 'none';
+                });
+            }
+            
+            setStorageItem('isPredittMode', isPredittMode);
+            
+            // Current day data re-rendering
+            if (currentDay) {
+                renderCustomers(currentDay);
+            }
+        }
+        
+        // 프레딧 데이터 초기화
+        function resetPredittData() {
+            if (confirm('프레딧 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                predittData = {
+                    monday: [],
+                    tuesday: [],
+                    wednesday: [],
+                    thursday: [],
+                    friday: []
+                };
+                
+                saveToStorage();
+                renderCustomers(currentDay);
+                alert('프레딧 데이터가 초기화되었습니다.');
+            }
+        }
+        
+        // 현재 날짜 표시
+        function updateCurrentDate() {
+            const now = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('currentDate').textContent = now.toLocaleDateString('ko-KR', options);
+            
+            // 현재 요일에 맞는 탭 자동 선택
+            const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+            const today = days[now.getDay()];
+            if (today !== 'saturday' && today !== 'sunday') {
+                showDay(today);
+            } else {
+                showDay('monday'); // 주말인 경우 월요일 탭 선택
+            }
+        }
+        
+        // 스토리지에서 데이터 로드
+        function loadFromStorage() {
+            const savedCustomersData = getStorageItem('customersData', null);
+            if (savedCustomersData) {
+                customersData = savedCustomersData;
+            }
+            
+            const savedPredittData = getStorageItem('predittData', null);
+            if (savedPredittData) {
+                predittData = savedPredittData;
+            }
+            
+            const savedNotesData = getStorageItem('notesData', null);
+            if (savedNotesData) {
+                notesData = savedNotesData;
+            }
+            
+            const savedCheckboxStates = getStorageItem('checkboxStates', null);
+            if (savedCheckboxStates) {
+                checkboxStates = savedCheckboxStates;
+            }
+            
+            // 고객 데이터 렌더링
+            renderAllCustomers();
+            
+            // 특이사항 렌더링
+            renderNotes();
+            
+            // 고객 수 업데이트
+            updateCustomerCounts();
+        }
+        
+        // 스토리지에 데이터 저장
+        function saveToStorage() {
+            setStorageItem('customersData', customersData);
+            setStorageItem('predittData', predittData);
+            setStorageItem('notesData', notesData);
+            setStorageItem('checkboxStates', checkboxStates);
+        }
+        
+        // 모든 요일의 고객 데이터 렌더링
+        function renderAllCustomers() {
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            days.forEach(day => renderCustomers(day));
+        }
+        
+        // 요일별 고객 데이터 렌더링
+        function renderCustomers(day) {
+            const container = document.getElementById(`${day}Customers`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // 프레딧 모드에 따라 데이터 결정
+            let data = isPredittMode ? 
+                predittData[day] : 
+                customersData[day];
+            
+            // 필터링된 데이터 가져오기
+            if (currentFilter[day] !== 'all') {
+                data = data.filter(customer => customer.building === currentFilter[day]);
+            }
+            
+            // 주소 기준으로 정렬 (같은 주소끼리 모으기)
+            data.sort((a, b) => a.address.localeCompare(b.address));
+            
+            // 고객 리스트 표시
+            data.forEach((customer, index) => {
+                // 건물 태그 클래스 결정
+                const buildingClass = getBuildingClass(customer.building);
+                
+                // 체크박스 상태 확인
+                const key = isPredittMode ? 
+                    `preditt-${day}-${index}` : 
+                    `${day}-${index}`;
+                const isChecked = checkboxStates[key] ? 'checked' : '';
+                const isCompleted = checkboxStates[key] ? 'completed' : '';
+                
+                let productsHTML = '';
+                customer.products.forEach((product, productIndex) => {
+                    productsHTML += `
+                        <div class="customer-products">
+                            ${product.name} ${product.quantity}개
+                            <div class="product-actions">
+                                <button class="edit-product-btn" onclick="editProduct('${day}', ${index}, ${productIndex})">✎</button>
+                                <button class="delete-product-btn" onclick="deleteProduct('${day}', ${index}, ${productIndex})">✕</button>
+                            </div>
+                            ${product.note ? `<div class="customer-note">${product.note}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                const customerHTML = `
+                    <div class="customer">
+                        <input type="checkbox" ${isChecked} onchange="toggleComplete(this, '${day}', ${index})">
+                        <div class="customer-info ${isCompleted}">
+                            <div class="customer-name">
+                                <div>
+                                    <span class="building-tag ${buildingClass}">${getBuildingDisplayName(customer.building)}</span>
+                                    ${customer.address}
+                                </div>
+                                <div class="customer-actions">
+                                    <button class="edit-customer-btn" onclick="editCustomer('${day}', ${index})">✎</button>
+                                    <button class="delete-customer-btn" onclick="deleteCustomer('${day}', ${index})">✕</button>
+                                </div>
+                            </div>
+                            ${productsHTML}
+                            <button class="add-product-btn" onclick="addProductToCustomer('${day}', ${index})">+ 제품 추가</button>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += customerHTML;
+            });
+            
+            // 고객 수 업데이트
+            updateCustomerCounts();
+        }
+        
+        // 건물 클래스 가져오기
+        function getBuildingClass(building) {
+            switch(building) {
+                case 'preditt': return 'preditt';
+                case 'jainomics': return 'jainomics';
+                case 'ramian': return 'ramian';
+                case 'prugio': return 'prugio';
+                default: return 'other';
+            }
+        }
+        
+        // 건물 표시 이름 가져오기
+        function getBuildingDisplayName(building) {
+            switch(building) {
+                case 'preditt': return '프레딧';
+                case 'jainomics': return '자이';
+                case 'ramian': return '래미안';
+                case 'prugio': return '푸르지오';
+                default: return '기타';
+            }
+        }
+        
+        // 요일별 특이사항 렌더링
+        function renderNotes() {
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            days.forEach(day => {
+                const element = document.getElementById(`${day}Notes`);
+                if (element) {
+                    element.textContent = notesData[day] || '';
+                }
+            });
+        }
+        
+        // 건물별 필터링
+        function filterBuilding(day, building) {
+            currentFilter[day] = building;
+            
+            // 필터 버튼 활성화 상태 업데이트
+            const filterButtons = document.querySelectorAll(`#${day} .filter-btn`);
+            filterButtons.forEach(button => {
+                if (button.dataset.building === building) {
+                    button.classList.add('active');
+                } else {
+                    button.classList.remove('active');
+                }
+            });
+            
+            // 고객 데이터 다시 렌더링
+            renderCustomers(day);
+        }
+        
+        // 요일별 데이터 표시
+        function showDay(day) {
+            // 모든 내용 숨기기
+            const contents = document.querySelectorAll('.day-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // 모든 탭 비활성화
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 선택한 요일 내용과 탭 활성화
+            const dayElement = document.getElementById(day);
+            if (dayElement) {
+                dayElement.classList.add('active');
+            }
+            
+            const tabIndex = getDayIndex(day);
+            const tabElement = document.querySelector(`.tab:nth-child(${tabIndex})`);
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+            
+            // 폼 숨기기
+            hideCustomerForm();
+            hideProductForm();
+            
+            currentDay = day;
+        }
+        
+        // 요일 인덱스 가져오기
+        function getDayIndex(day) {
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            return days.indexOf(day) + 1;
+        }
+        
+        // 배달 완료 체크
+        function toggleComplete(checkbox, day, index) {
+            const customerInfo = checkbox.nextElementSibling;
+            const key = isPredittMode ? 
+                `preditt-${day}-${index}` : 
+                `${day}-${index}`;
+            
+            if (checkbox.checked) {
+                customerInfo.classList.add('completed');
+                checkboxStates[key] = true;
+            } else {
+                customerInfo.classList.remove('completed');
+                delete checkboxStates[key];
+            }
+            
+            // 스토리지에 저장
+            saveToStorage();
+        }
+        
+        // 모두 체크하기
+        function checkAll(day) {
+            const checkboxes = document.querySelectorAll(`#${day}Customers input[type="checkbox"]`);
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.checked = true;
+                checkbox.nextElementSibling.classList.add('completed');
+                
+                const key = isPredittMode ? 
+                    `preditt-${day}-${index}` : 
+                    `${day}-${index}`;
+                checkboxStates[key] = true;
+            });
+            
+            // 스토리지에 저장
+            saveToStorage();
+        }
+        
+        // 모두 체크 해제하기
+        function uncheckAll(day) {
+            const checkboxes = document.querySelectorAll(`#${day}Customers input[type="checkbox"]`);
+            checkboxes.forEach((checkbox, index) => {
+                checkbox.checked = false;
+                checkbox.nextElementSibling.classList.remove('completed');
+                
+                const key = isPredittMode ? 
+                    `preditt-${day}-${index}` : 
+                    `${day}-${index}`;
+                delete checkboxStates[key];
+            });
+            
+            // 스토리지에 저장
+            saveToStorage();
+        }
+        
+        // 고객 검색
+        function searchCustomers(day) {
+            const searchTerm = document.getElementById(`${day}Search`).value.toLowerCase();
+            
+            // 프레딧 모드에 따라 데이터 결정
+            let data = isPredittMode ? 
+                predittData[day] : 
+                customersData[day];
+            
+            // 필터링된 데이터 가져오기
+            if (currentFilter[day] !== 'all') {
+                data = data.filter(customer => customer.building === currentFilter[day]);
+            }
+            
+            // 검색어로 필터링
+            if (searchTerm) {
+                data = data.filter(customer => 
+                    customer.address.toLowerCase().includes(searchTerm) ||
+                    customer.products.some(product => 
+                        product.name.toLowerCase().includes(searchTerm) ||
+                        (product.note && product.note.toLowerCase().includes(searchTerm))
+                    )
+                );
+            }
+            
+            // 고객 리스트 표시
+            const container = document.getElementById(`${day}Customers`);
+            container.innerHTML = '';
+            
+            data.forEach((customer, index) => {
+                // 건물 태그 클래스 결정
+                const buildingClass = getBuildingClass(customer.building);
+                
+                // 체크박스 상태 확인
+                const key = isPredittMode ? 
+                    `preditt-${day}-${index}` : 
+                    `${day}-${index}`;
+                const isChecked = checkboxStates[key] ? 'checked' : '';
+                const isCompleted = checkboxStates[key] ? 'completed' : '';
+                
+                let productsHTML = '';
+                customer.products.forEach((product, productIndex) => {
+                    productsHTML += `
+                        <div class="customer-products">
+                            ${product.name} ${product.quantity}개
+                            <div class="product-actions">
+                                <button class="edit-product-btn" onclick="editProduct('${day}', ${index}, ${productIndex})">✎</button>
+                                <button class="delete-product-btn" onclick="deleteProduct('${day}', ${index}, ${productIndex})">✕</button>
+                            </div>
+                            ${product.note ? `<div class="customer-note">${product.note}</div>` : ''}
+                        </div>
+                    `;
+                });
+                
+                const customerHTML = `
+                    <div class="customer">
+                        <input type="checkbox" ${isChecked} onchange="toggleComplete(this, '${day}', ${index})">
+                        <div class="customer-info ${isCompleted}">
+                            <div class="customer-name">
+                                <div>
+                                    <span class="building-tag ${buildingClass}">${getBuildingDisplayName(customer.building)}</span>
+                                    ${customer.address}
+                                </div>
+                                <div class="customer-actions">
+                                    <button class="edit-customer-btn" onclick="editCustomer('${day}', ${index})">✎</button>
+                                    <button class="delete-customer-btn" onclick="deleteCustomer('${day}', ${index})">✕</button>
+                                </div>
+                            </div>
+                            ${productsHTML}
+                            <button class="add-product-btn" onclick="addProductToCustomer('${day}', ${index})">+ 제품 추가</button>
+                        </div>
+                    </div>
+                `;
+                
+                container.innerHTML += customerHTML;
+            });
+            
+            // 검색 결과 수 업데이트
+            document.getElementById(`${day}Count`).textContent = `검색 결과: ${data.length}명의 고객`;
+        }
+        
+        // 검색 초기화
+        function clearSearch(day) {
+            document.getElementById(`${day}Search`).value = '';
+            renderCustomers(day);
+        }
+        
+        // 고객 수 업데이트
+        function updateCustomerCounts() {
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
+            days.forEach(day => {
+                const countElement = document.getElementById(`${day}Count`);
+                if (!countElement) return;
+                
+                // 프레딧 모드에 따라 데이터 결정
+                let data = isPredittMode ? 
+                    predittData[day] : 
+                    customersData[day];
+                
+                // 필터링된 데이터 가져오기
+                if (currentFilter[day] !== 'all') {
+                    data = data.filter(customer => customer.building === currentFilter[day]);
+                }
+                
+                // 총 제품 수 계산
+                let productCount = 0;
+                data.forEach(customer => {
+                    productCount += customer.products.length;
+                });
+                
+                countElement.textContent = `총 ${data.length}개 호수, ${productCount}개 제품`;
+            });
+        }
+        
+        // 고객 추가 폼 표시
+        function showNewCustomerForm(day) {
+            // 임시 제품 목록 초기화
+            tempProducts = [];
+            
+            // 폼 초기화
+            document.getElementById('customerForm').style.display = 'block';
+            
+            // 건물 타입 설정
+            if (isPredittMode) {
+                // preditt 옵션이 없으면 추가
+                const buildingSelect = document.getElementById('customerBuilding');
+                if (!Array.from(buildingSelect.options).some(opt => opt.value === 'preditt')) {
+                    const predittOption = document.createElement('option');
+                    predittOption.value = 'preditt';
+                    predittOption.textContent = '프레딧';
+                    buildingSelect.insertBefore(predittOption, buildingSelect.firstChild);
+                }
+                document.getElementById('customerBuilding').value = 'preditt';
+            } else {
+                document.getElementById('customerBuilding').value = 'jainomics';
+            }
+            
+            document.getElementById('customerAddress').value = '';
+            document.getElementById('customerIndex').value = '';
+            document.getElementById('formMode').value = 'add';
+            document.getElementById('productList').innerHTML = '';
+            
+            currentDay = day;
+        }
+        
+        // 고객 추가/편집 폼 숨기기
+        function hideCustomerForm() {
+            document.getElementById('customerForm').style.display = 'none';
+        }
+        
+        // 고객 수정
+        function editCustomer(day, index) {
+            // 해당 데이터 가져오기
+            const data = isPredittMode ? predittData[day] : customersData[day];
+            const customer = data[index];
+            
+            // 임시 제품 목록 설정
+            tempProducts = [...customer.products];
+            
+            // 폼 초기화
+            document.getElementById('customerForm').style.display = 'block';
+            
+            // Preditt 모드일 때 건물 옵션 확인
+            if (isPredittMode) {
+                const buildingSelect = document.getElementById('customerBuilding');
+                if (!Array.from(buildingSelect.options).some(opt => opt.value === 'preditt')) {
+                    const predittOption = document.createElement('option');
+                    predittOption.value = 'preditt';
+                    predittOption.textContent = '프레딧';
+                    buildingSelect.insertBefore(predittOption, buildingSelect.firstChild);
+                }
+            }
+            
+            document.getElementById('customerBuilding').value = customer.building;
+            document.getElementById('customerAddress').value = customer.address;
+            document.getElementById('customerIndex').value = index;
+            document.getElementById('formMode').value = 'edit';
+            
+            // 제품 목록 표시
+            renderProductList();
+            
+            currentDay = day;
+        }
+        
+        // 고객 삭제
+        function deleteCustomer(day, index) {
+            if (confirm('이 고객을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                // 데이터에서 고객 제거
+                if (isPredittMode) {
+                    predittData[day].splice(index, 1);
+                } else {
+                    customersData[day].splice(index, 1);
+                }
+                
+                // 체크박스 상태 업데이트
+                const key = isPredittMode ? 
+                    `preditt-${day}-${index}` : 
+                    `${day}-${index}`;
+                delete checkboxStates[key];
+                
+                // 스토리지에 저장
+                saveToStorage();
+                
+                // 고객 데이터 다시 렌더링
+                renderCustomers(day);
+            }
+        }
+        
+        // 제품 목록 렌더링
+        function renderProductList() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+            
+            tempProducts.forEach((product, index) => {
+                const productHTML = `
+                    <div style="margin-bottom: 10px; padding: 10px; background-color: #f0f0f0; border-radius: 4px;">
+                        <div style="font-weight: bold;">${product.name} ${product.quantity}개</div>
+                        ${product.note ? `<div style="font-size: 0.8em; color: #ff6b6b;">${product.note}</div>` : ''}
+                        <div style="margin-top: 5px;">
+                            <button style="border: none; background: none; color: #2D68C4; cursor: pointer;" onclick="showProductForm('edit', ${index})">수정</button>
+                            <button style="border: none; background: none; color: #f44336; cursor: pointer;" onclick="removeProduct(${index})">삭제</button>
+                        </div>
+                    </div>
+                `;
+                
+                productList.innerHTML += productHTML;
+            });
+        }
+        
+        // 제품 추가 폼 표시
+        function showProductForm(mode, index) {
+            document.getElementById('productForm').style.display = 'block';
+            
+            if (mode === 'add') {
+                document.getElementById('productName').value = '';
+                document.getElementById('productQuantity').value = '1';
+                document.getElementById('productNote').value = '';
+                document.getElementById('productIndex').value = '';
+                document.getElementById('productFormMode').value = 'add';
+            } else if (mode === 'edit') {
+                const product = tempProducts[index];
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productQuantity').value = product.quantity;
+                document.getElementById('productNote').value = product.note || '';
+                document.getElementById('productIndex').value = index;
+                document.getElementById('productFormMode').value = 'edit';
+            }
+        }
+        
+        // 제품 추가/수정 폼 숨기기
+        function hideProductForm() {
+            document.getElementById('productForm').style.display = 'none';
+        }
+        
+        // 제품 추가/수정
+        function saveProduct() {
+            const name = document.getElementById('productName').value.trim();
+            const quantity = parseInt(document.getElementById('productQuantity').value) || 1;
+            const note = document.getElementById('productNote').value.trim();
+            const mode = document.getElementById('productFormMode').value;
+            const index = document.getElementById('productIndex').value;
+            
+            if (name) {
+                if (mode === 'add') {
+                    // 새 제품 추가
+                    tempProducts.push({
+                        name: name,
+                        quantity: quantity,
+                        note: note
+                    });
+                } else if (mode === 'edit') {
+                    // 기존 제품 수정
+                    tempProducts[index] = {
+                        name: name,
+                        quantity: quantity,
+                        note: note
+                    };
+                }
+                
+                // 제품 목록 다시 렌더링
+                renderProductList();
+                
+                // 폼 숨기기
+                hideProductForm();
+            } else {
+                alert('제품명은 필수 입력 항목입니다.');
+            }
+        }
+        
+        // 제품 삭제
+        function removeProduct(index) {
+            tempProducts.splice(index, 1);
+            renderProductList();
+        }
+        
+        // 고객 저장
+        function saveCustomer() {
+            const building = document.getElementById('customerBuilding').value;
+            const address = document.getElementById('customerAddress').value.trim();
+            const mode = document.getElementById('formMode').value;
+            const index = document.getElementById('customerIndex').value;
+            
+            if (address && tempProducts.length > 0) {
+                if (mode === 'add') {
+                    // 새 고객 추가
+                    const newCustomer = {
+                        building: building,
+                        address: address,
+                        products: [...tempProducts]
+                    };
+                    
+                    if (isPredittMode) {
+                        predittData[currentDay].push(newCustomer);
+                    } else {
+                        customersData[currentDay].push(newCustomer);
+                    }
+                } else if (mode === 'edit') {
+                    // 기존 고객 수정
+                    const data = isPredittMode ? predittData[currentDay] : customersData[currentDay];
+                    data[index] = {
+                        building: building,
+                        address: address,
+                        products: [...tempProducts]
+                    };
+                }
+                
+                // 스토리지에 저장
+                saveToStorage();
+                
+                // 고객 데이터 다시 렌더링
+                renderCustomers(currentDay);
+                
+                // 폼 숨기기
+                hideCustomerForm();
+            } else {
+                alert('호수와 최소 1개 이상의 제품을 입력해야 합니다.');
+            }
+        }
+        
+        // 고객에 제품 추가
+        function addProductToCustomer(day, index) {
+            // 해당 데이터 가져오기
+            const data = isPredittMode ? predittData[day] : customersData[day];
+            const customer = data[index];
+            
+            // 임시 제품 목록 설정
+            tempProducts = [...customer.products];
+            
+            // 인덱스 저장
+            document.getElementById('customerIndex').value = index;
+            document.getElementById('formMode').value = 'edit';
+            document.getElementById('customerBuilding').value = customer.building;
+            document.getElementById('customerAddress').value = customer.address;
+            
+            // 제품 추가 폼 표시
+            showProductForm('add');
+            
+            currentDay = day;
+        }
+        
+        // 제품 수정
+        function editProduct(day, customerIndex, productIndex) {
+            // 해당 데이터 가져오기
+            const data = isPredittMode ? predittData[day] : customersData[day];
+            const customer = data[customerIndex];
+            const product = customer.products[productIndex];
+            
+            // 임시 제품 목록 설정
+            tempProducts = [...customer.products];
+            
+            // 인덱스 저장
+            document.getElementById('customerIndex').value = customerIndex;
+            document.getElementById('formMode').value = 'edit';
+            document.getElementById('customerBuilding').value = customer.building;
+            document.getElementById('customerAddress').value = customer.address;
+            
+            // 제품 편집 폼 표시
+            showProductForm('edit', productIndex);
+            
+            currentDay = day;
+        }
+        
+        // 제품 삭제
+        function deleteProduct(day, customerIndex, productIndex) {
+            if (confirm('이 제품을 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                // 해당 데이터 가져오기
+                const data = isPredittMode ? predittData[day] : customersData[day];
+                const customer = data[customerIndex];
+                
+                // 제품 데이터에서 제거
+                customer.products.splice(productIndex, 1);
+                
+                // 제품이 하나도 없으면 고객도 삭제
+                if (customer.products.length === 0) {
+                    data.splice(customerIndex, 1);
+                }
+                
+                // 스토리지에 저장
+                saveToStorage();
+                
+                // 고객 데이터 다시 렌더링
+                renderCustomers(day);
+            }
+        }
+        
+        // 특이사항 수정 모드 전환
+        function editNotes(day) {
+            const notesElement = document.getElementById(`${day}Notes`);
+            const isEditable = notesElement.getAttribute('contenteditable') === 'true';
+            
+            if (isEditable) {
+                // 편집 모드 종료
+                notesElement.setAttribute('contenteditable', 'false');
+                document.querySelector(`#${day} #editNotes`).textContent = '수정';
+                
+                // 변경된 내용 저장
+                notesData[day] = notesElement.textContent;
+                
+                // 스토리지에 저장
+                saveToStorage();
+            } else {
+                // 편집 모드 시작
+                notesElement.setAttribute('contenteditable', 'true');
+                notesElement.focus();
+                document.querySelector(`#${day} #editNotes`).textContent = '저장';
+            }
+        }
+        
+        // 데이터 내보내기
+        function exportData(day) {
+            // 내보낼 데이터 준비
+            let exportText = `=== ${getKoreanDayName(day)} 배달 리스트 ===\n\n`;
+            
+            // 프레딧 모드에 따라 데이터 결정
+            let data = isPredittMode ? 
+                predittData[day] : 
+                customersData[day];
+            
+            // 필터링된 데이터 가져오기
+            if (currentFilter[day] !== 'all') {
+                data = data.filter(customer => customer.building === currentFilter[day]);
+            }
+            
+            // 정렬
+            data.sort((a, b) => a.address.localeCompare(b.address));
+            
+            // 고객 리스트 표시
+            data.forEach(customer => {
+                exportText += `${getBuildingDisplayName(customer.building)} ${customer.address}\n`;
+                
+                customer.products.forEach(product => {
+                    exportText += `- ${product.name} ${product.quantity}개\n`;
+                    if (product.note) {
+                        exportText += `  (${product.note})\n`;
+                    }
+                });
+                
+                exportText += '\n';
+            });
+            
+            if (notesData[day]) {
+                exportText += '특이사항: ' + notesData[day] + '\n';
+            }
+            
+            // 클립보드에 복사 (모바일에서는 제한적으로 작동)
+            try {
+                navigator.clipboard.writeText(exportText).then(() => {
+                    alert('데이터가 클립보드에 복사되었습니다!');
+                }).catch(err => {
+                    // 클립보드 접근 실패 시 대체 방법
+                    fallbackExport(exportText);
+                });
+            } catch (e) {
+                // 클립보드 API를 지원하지 않는 브라우저
+                fallbackExport(exportText);
+            }
+        }
+        
+        // 한글 요일 이름 가져오기
+        function getKoreanDayName(day) {
+            switch(day) {
+                case 'monday': return '월요일';
+                case 'tuesday': return '화요일';
+                case 'wednesday': return '수요일';
+                case 'thursday': return '목요일';
+                case 'friday': return '금요일';
+                default: return day;
+            }
+        }
+        
+        // 영어 요일 이름 가져오기
+        function getEnglishDayName(koreanDay) {
+            switch(koreanDay) {
+                case '월요일': return 'monday';
+                case '화요일': return 'tuesday';
+                case '수요일': return 'wednesday';
+                case '목요일': return 'thursday';
+                case '금요일': return 'friday';
+                case '월': return 'monday';
+                case '화': return 'tuesday';
+                case '수': return 'wednesday';
+                case '목': return 'thursday';
+                case '금': return 'friday';
+                default: return koreanDay.toLowerCase();
+            }
+        }
+        
+        // 건물 코드 가져오기
+        function getBuildingCode(buildingName) {
+            switch(buildingName.trim().toLowerCase()) {
+                case '프레딧': return 'preditt';
+                case '자이': return 'jainomics';
+                case '래미안': return 'ramian';
+                case '푸르지오': return 'prugio';
+                default: return 'other';
+            }
+        }
+        
+        // 대체 데이터 내보내기 방법
+        function fallbackExport(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    alert('데이터가 클립보드에 복사되었습니다!');
+                } else {
+                    alert('데이터를 복사할 수 없습니다. 아래 내용을 직접 복사해주세요:');
+                    alert(text);
+                }
+            } catch (e) {
+                alert('데이터를 복사할 수 없습니다. 아래 내용을 직접 복사해주세요:');
+                alert(text);
+            }
+            
+            document.body.removeChild(textarea);
+        }
+        
+        // CSV 파일 처리
+        function handleFileSelect(evt) {
+            const file = evt.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                importCsvData(e.target.result);
+            };
+            reader.readAsText(file);
+        }
+        
+        // CSV 입력창 표시
+        function showCsvInput() {
+            const csvData = document.getElementById('csvData');
+            csvData.style.display = 'block';
+            csvData.focus();
+            
+            document.getElementById('importCsvBtn').style.display = 'inline-block';
+        }
+        
+        // CSV 텍스트 가져오기
+        function importCsvText() {
+            const csvData = document.getElementById('csvData').value;
+            importCsvData(csvData);
+        }
+        
+        // CSV 데이터 처리
+        function importCsvData(csvText) {
+            if (!csvText) {
+                alert('가져올 데이터가 없습니다.');
+                return;
+            }
+            
+            const lines = csvText.split(/\r\n|\n|\r/).filter(line => line.trim());
+            
+            // 첫 줄이 헤더인지 확인
+            let startIndex = 0;
+            if (lines[0].includes('요일') || lines[0].includes('아파트') || lines[0].includes('호수') || lines[0].includes('제품명')) {
+                startIndex = 1;
+            }
+            
+            // 유효한 데이터인지 확인
+            if (lines.length <= startIndex) {
+                alert('유효한 데이터가 없습니다.');
+                return;
+            }
+            
+            // 프레딧 모드 여부에 따라 데이터 결정
+            const targetData = isPredittMode ? predittData : customersData;
+            
+            // CSV 데이터 파싱
+            let addedCount = 0;
+            for (let i = startIndex; i < lines.length; i++) {
+                const line = lines[i].trim();
+                if (!line) continue;
+                
+                // 쉼표로 구분된 데이터 파싱
+                const parts = line.split(',');
+                if (parts.length < 4) continue; // 최소 요일, 아파트, 호수, 제품명 필요
+                
+                const day = getEnglishDayName(parts[0].trim());
+                if (!targetData[day]) continue; // 유효한 요일인지 확인
+                
+                const building = getBuildingCode(parts[1].trim());
+                const address = parts[2].trim();
+                const productName = parts[3].trim();
+                const productQuantity = parseInt(parts[4]) || 1;
+                const productNote = parts.length > 5 ? parts[5].trim() : '';
+                
+                // 기존 고객 찾기
+                let found = false;
+                for (let j = 0; j < targetData[day].length; j++) {
+                    const customer = targetData[day][j];
+                    if (customer.building === building && customer.address === address) {
+                        // 기존 고객에 제품 추가
+                        customer.products.push({
+                            name: productName,
+                            quantity: productQuantity,
+                            note: productNote
+                        });
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (!found) {
+                    // 새 고객 추가
+                    targetData[day].push({
+                        building: building,
+                        address: address,
+                        products: [{
+                            name: productName,
+                            quantity: productQuantity,
+                            note: productNote
+                        }]
+                    });
+                }
+                
+                addedCount++;
+            }
+            
+            if (addedCount > 0) {
+                // 스토리지에 저장
+                saveToStorage();
+                
+                // 데이터 다시 렌더링
+                renderAllCustomers();
+                
+                // CSV 입력창 초기화
+                document.getElementById('csvData').value = '';
+                document.getElementById('csvData').style.display = 'none';
+                document.getElementById('importCsvBtn').style.display = 'none';
+                document.getElementById('csvFileInput').value = '';
+                
+                alert(`${addedCount}개의 데이터가 성공적으로 가져와졌습니다!`);
+            } else {
+                alert('가져올 수 있는 유효한 데이터가 없습니다. 형식을 확인해주세요.');
+            }
+        }
+        
+        // 데이터 백업
+        function backupData() {
+            // 백업할 데이터 준비
+            const backupObject = {
+                customersData: customersData,
+                predittData: predittData,
+                notesData: notesData,
+                timestamp: new Date().toISOString()
+            };
+            
+            // JSON 문자열로 변환
+            const backupString = JSON.stringify(backupObject, null, 2);
+            
+            // 백업 데이터 표시
+            const backupTextarea = document.getElementById('backupData');
+            backupTextarea.value = backupString;
+            backupTextarea.style.display = 'block';
+            
+            // 클립보드에 복사
+            try {
+                navigator.clipboard.writeText(backupString).then(() => {
+                    alert('백업 데이터가 클립보드에 복사되었습니다!\n이 데이터를 안전한 곳에 저장해두세요.');
+                }).catch(err => {
+                    alert('백업 데이터를 복사하려면 아래 텍스트를 선택하고 복사하세요.');
+                });
+            } catch (e) {
+                alert('백업 데이터를 복사하려면 아래 텍스트를 선택하고 복사하세요.');
+            }
+        }
+        
+        // 복원 폼 표시
+        function showRestoreForm() {
+            const backupTextarea = document.getElementById('backupData');
+            backupTextarea.value = '';
+            backupTextarea.style.display = 'block';
+            backupTextarea.placeholder = '백업 데이터를 여기에 붙여넣고 엔터를 누르세요.';
+            
+            backupTextarea.focus();
+            
+            // 엔터 키 이벤트 리스너 추가
+            backupTextarea.onkeydown = function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    restoreData();
+                }
+            };
+        }
+        
+        // 데이터 복원
+        function restoreData() {
+            const backupTextarea = document.getElementById('backupData');
+            const backupString = backupTextarea.value.trim();
+            
+            if (!backupString) {
+                alert('백업 데이터를 입력해주세요.');
+                return;
+            }
+            
+            try {
+                // JSON 파싱
+                const backupObject = JSON.parse(backupString);
+                
+                // 데이터 검증
+                if (!backupObject.customersData || !backupObject.notesData) {
+                    throw new Error('유효하지 않은 백업 데이터입니다.');
+                }
+                
+                // 백업 확인
+                if (confirm(`${backupObject.timestamp || '알 수 없는 날짜'}에 백업된 데이터를 복원하시겠습니까? 현재 데이터는 모두 삭제됩니다.`)) {
+                    // 데이터 복원
+                    customersData = backupObject.customersData;
+                    predittData = backupObject.predittData || {
+                        monday: [],
+                        tuesday: [],
+                        wednesday: [],
+                        thursday: [],
+                        friday: []
+                    };
+                    notesData = backupObject.notesData;
+                    checkboxStates = {}; // 체크박스 상태 초기화
+                    
+                    // 스토리지에 저장
+                    saveToStorage();
+                    
+                    // 데이터 다시 렌더링
+                    renderAllCustomers();
+                    renderNotes();
+                    
+                    // 백업 데이터 숨기기
+                    backupTextarea.style.display = 'none';
+                    
+                    alert('데이터가 성공적으로 복원되었습니다!');
+                }
+            } catch (e) {
+                alert('백업 데이터를 복원하는 중 오류가 발생했습니다. 유효한 백업 데이터인지 확인해주세요.');
+                console.error(e);
+            }
+        }
+        
+        // 데이터 초기화
+        function resetData() {
+            if (confirm('모든 데이터를 초기화하시겠습니까? 이 작업은 되돌릴 수 없습니다.')) {
+                customersData = {
+                    monday: [],
+                    tuesday: [],
+                    wednesday: [],
+                    thursday: [],
+                    friday: []
+                };
+                
+                predittData = {
+                    monday: [],
+                    tuesday: [],
+                    wednesday: [],
+                    thursday: [],
+                    friday: []
+                };
+                
+                notesData = {
+                    monday: '',
+                    tuesday: '',
+                    wednesday: '',
+                    thursday: '',
+                    friday: ''
+                };
+                
+                checkboxStates = {};
+                
+                saveToStorage();
+                renderAllCustomers();
+                renderNotes();
+                
+                alert('모든 데이터가 초기화되었습니다.');
+            }
+        }
+        
+        // 맨 위로 스크롤
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>
