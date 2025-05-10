@@ -503,6 +503,48 @@
             border-radius: 4px;
             cursor: pointer;
         }
+        .customer-note {
+    font-size: 0.8em;
+    color: #ff6b6b;
+    margin-top: 2px;
+    white-space: normal;
+    word-break: break-all;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
+
+.customer-products {
+    font-size: 0.85em;
+    color: #2D68C4;
+    position: relative;
+    padding-right: 70px;
+    min-height: 40px;
+}
+
+/* 팝업 스타일 추가 */
+.note-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 1000;
+    max-width: 80%;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.note-popup-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+}
     </style>
 </head>
 <body>
@@ -1154,7 +1196,7 @@
                                 <button class="edit-product-btn" onclick="editProduct('${day}', ${index}, ${productIndex})">✎</button>
                                 <button class="delete-product-btn" onclick="deleteProduct('${day}', ${index}, ${productIndex})">✕</button>
                             </div>
-                            ${product.note ? `<div class="customer-note">${product.note}</div>` : ''}
+                           ${product.note ? `<div class="customer-note" onclick="showNotePopup('${product.note.replace(/'/g, "\\'")}')"><span style="text-decoration:underline;">${product.note}</span> <small>👆</small></div>` : ''}
                         </div>
                     `;
                 });
@@ -1378,7 +1420,7 @@
                                 <button class="edit-product-btn" onclick="editProduct('${day}', ${index}, ${productIndex})">✎</button>
                                 <button class="delete-product-btn" onclick="deleteProduct('${day}', ${index}, ${productIndex})">✕</button>
                             </div>
-                            ${product.note ? `<div class="customer-note">${product.note}</div>` : ''}
+                            ${product.note ? `<div class="customer-note" onclick="showNotePopup('${product.note.replace(/'/g, "\\'")}')"><span style="text-decoration:underline;">${product.note}</span> <small>👆</small></div>` : ''}
                         </div>
                     `;
                 });
@@ -2136,6 +2178,28 @@
                 behavior: 'smooth'
             });
         }
+        // 특이사항 팝업 표시 함수
+function showNotePopup(text) {
+    const backdrop = document.createElement('div');
+    backdrop.className = 'note-popup-backdrop';
+    document.body.appendChild(backdrop);
+    
+    const popup = document.createElement('div');
+    popup.className = 'note-popup';
+    popup.innerHTML = `
+        <h3>특이사항 전체 내용</h3>
+        <p>${text}</p>
+        <button onclick="closeNotePopup()" style="margin-top:10px;padding:5px 10px;background:#2D68C4;color:white;border:none;border-radius:4px;cursor:pointer;">닫기</button>
+    `;
+    document.body.appendChild(popup);
+}
+
+function closeNotePopup() {
+    const backdrop = document.querySelector('.note-popup-backdrop');
+    const popup = document.querySelector('.note-popup');
+    if (backdrop) backdrop.remove();
+    if (popup) popup.remove();
+}
     </script>
 </body>
 </html>
